@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Load config values
-GRADLE_PROPERTIES="gradle.properties"
-if [[ ! -f "$GRADLE_PROPERTIES" ]]; then
-    echo "gradle.properties was not found"
+CONFIG_FILE="setup.config"
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    echo "$CONFIG_FILE was not found"
     exit 1
 fi
 
@@ -16,23 +16,23 @@ while IFS='=' read -r key value; do
     value=$(echo "$value" | tr -d ' ')
     case "$key" in
         mod_id) MOD_ID="$value" ;;
-        archives_base_name) MOD_NAME="$value" ;;
+        mod_name) MOD_NAME="$value" ;;
         maven_group) MAVEN_GROUP="$value" ;;
     esac
-done < "$GRADLE_PROPERTIES"
+done < "$CONFIG_FILE"
 
 if [[ -z "$MOD_ID" ]]; then
-    echo "mod_id is not set in $GRADLE_PROPERTIES"
+    echo "mod_id is not set in $CONFIG_FILE"
     exit 1
 fi
 
 if [[ -z "$MOD_NAME" ]]; then
-    echo "archives_base_name is not set in $GRADLE_PROPERTIES"
+    echo "mod_name is not set in $CONFIG_FILE"
     exit 1
 fi
 
 if [[ -z "$MAVEN_GROUP" ]]; then
-    echo "maven_group is not set in $GRADLE_PROPERTIES"
+    echo "maven_group is not set in $CONFIG_FILE"
     exit 1
 fi
 
@@ -66,9 +66,11 @@ if [[ "$MAVEN_GROUP" != "ca.fxco" ]]; then
     mv "src/main/java/$OLD_PACKAGE_PATH"/* "src/main/java/$NEW_PACKAGE_PATH/"
     rm -rf "src/main/java/$OLD_PACKAGE_PATH"
     find src/main/java -type f -exec sed -i "/ca\.fxco\.pistonlib/!s/ca\.fxco/$MAVEN_GROUP/g" {} +
+    # Replace maven_group in gradle.properties
+    sed -i "/ca\.fxco/$MAVEN_GROUP/g" gradle.properties
 fi
 
 # Remove setup files
-rm -- "setup.bat" "setup.sh"
+rm -- "setup.bat" "setup.sh" "setup.config"
 
 echo "Setup completed successfully."
