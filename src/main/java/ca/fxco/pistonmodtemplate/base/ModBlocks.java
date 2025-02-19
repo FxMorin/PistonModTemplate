@@ -17,7 +17,7 @@ public class ModBlocks {
     public static final Block TEMPLATE_BLOCK = register(
             "template_block",
             Block::new,
-            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE_BLOCK)
+            BlockBehaviour.Properties.ofFullCopy(Blocks.STONE)
     );
 
     private static <T extends Block> T register(String name, Function<BlockBehaviour.Properties, T> function,
