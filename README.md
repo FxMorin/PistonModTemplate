@@ -1,3 +1,22 @@
 ## Template for PistonLib mods
 
+This is a template PistonLib Mod. It allows you to quickly setup your own piston mod using PistonLib.
+
+### Setup
+
+Setting up the template is pretty straightforward. Everything's been automated!
+
+1. Open the `gradle.properties` file and change the following values:
+   - `mod_id` - Change `pistonmodtemplate` to your new mod id
+   - `maven_group` - Change `ca.fxco` to your package
+   - `archives_base_name` - Change `PistonModTemplate` to your mod name/archive base name *(without spaces)*
+2. Now run the setup file
+   - On Windows, run `setup.bat`
+   - On Mac/Linux, run `setup.sh`
+3. You're done.
+   - The setup file changes the structure of the template mod, to use your gradle properties!
+   - Now you can start working on your piston mod
+
+### Piston Mod
+
 TODO
