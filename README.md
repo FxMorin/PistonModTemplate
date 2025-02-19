@@ -1,8 +1,8 @@
-## Template for PistonLib mods
+# Template for PistonLib mods
 
 This is a template PistonLib Mod. It allows you to quickly setup your own piston mod using PistonLib.
 
-### Setup
+## Setup
 
 Setting up the template is pretty straightforward. Everything's been automated!
 
@@ -17,6 +17,22 @@ Setting up the template is pretty straightforward. Everything's been automated!
    - The setup file changes the structure of the template mod, to use your gradle properties!
    - Now you can start working on your piston mod
 
-### Piston Mod
+## Piston Mod
 
-TODO
+### Code Structure
+```
+📦 ca.fxco.pistonmodtemplate
+ ┣ 📂 base
+ ┃ ┣ ModBlockEntities
+ ┃ ┣ ModBlocks
+ ┃ ┣ ModItems
+ ┃ ┣ ModPistonFamilies
+ ┃ ┗ ModStickyGroups
+ ┣ 📂 client
+ ┃ ┗ PistonModTemplateClient
+ ┗ PistonModTemplate
+```
+
+This template mod provides a couple base template examples for different types of implementations. 
+You can find all of them by searching for `TODO-TEMPLATE`.  
+These templates should be replaced with your own implementations!

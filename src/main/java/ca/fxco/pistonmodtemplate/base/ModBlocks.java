@@ -12,8 +12,13 @@ import java.util.function.Function;
 
 import static ca.fxco.pistonmodtemplate.PistonModTemplate.id;
 
+/**
+ * Holds instances of all block registered by this mod.</br>
+ * Minecraft does the same thing in {@link Blocks}
+ */
 public class ModBlocks {
 
+    // TODO-TEMPLATE
     public static final Block TEMPLATE_BLOCK = register(
             "template_block",
             Block::new,
