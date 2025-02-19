@@ -11,6 +11,7 @@ fi
 MOD_ID=""
 MOD_NAME=""
 MAVEN_GROUP=""
+ACCESS_WIDENER=""
 while IFS='=' read -r key value; do
     key=$(echo "$key" | tr -d ' ')
     value=$(echo "$value" | tr -d ' ')
@@ -18,6 +19,7 @@ while IFS='=' read -r key value; do
         mod_id) MOD_ID="$value" ;;
         mod_name) MOD_NAME="$value" ;;
         maven_group) MAVEN_GROUP="$value" ;;
+        access_widener) ACCESS_WIDENER="$value" ;;
     esac
 done < "$CONFIG_FILE"
 
@@ -36,6 +38,13 @@ if [[ -z "$MAVEN_GROUP" ]]; then
     exit 1
 fi
 
+# Handle accessWidener
+if [[ "$ACCESS_WIDENER" != "true" ]]; then
+    sed -i '/"src\/main\/resources\/pistonmodtemplate\.accesswidener"/d' build.gradle
+    sed -i '/"pistonmodtemplate\.accesswidener"/d' src/main/resources/fabric.mod.json
+    rm -f src/main/resources/pistonmodtemplate.accesswidener
+fi
+
 # Rename directories
 find . -depth -type d -name "*pistonmodtemplate*" | while read -r dir; do
     newdir=$(echo "$dir" | sed "s/pistonmodtemplate/$MOD_ID/g")
@@ -44,7 +53,15 @@ find . -depth -type d -name "*pistonmodtemplate*" | while read -r dir; do
     fi
 done
 
-# Rename files
+# Rename files mod_id
+find . -depth -type f -name "*pistonmodtemplate*" | while read -r file; do
+    newfile=$(echo "$file" | sed "s/pistonmodtemplate/$MOD_ID/g")
+    if [ "$file" != "$newfile" ]; then
+        mv "$file" "$newfile"
+    fi
+done
+
+# Rename files mod_name
 find . -depth -type f -name "*PistonModTemplate*" | while read -r file; do
     newfile=$(echo "$file" | sed "s/PistonModTemplate/$MOD_NAME/g")
     if [ "$file" != "$newfile" ]; then

@@ -12,6 +12,7 @@ if not exist "%CONFIG_FILE%" (
 set "MOD_ID="
 set "MOD_NAME="
 set "MAVEN_GROUP="
+set "ACCESS_WIDENER="
 for /f "tokens=1,2 delims==" %%A in (%CONFIG_FILE%) do (
     set "key=%%A"
     set "value=%%B"
@@ -20,6 +21,7 @@ for /f "tokens=1,2 delims==" %%A in (%CONFIG_FILE%) do (
     if "!key!"=="mod_id" set "MOD_ID=!value!"
     if "!key!"=="mod_name" set "MOD_NAME=!value!"
     if "!key!"=="maven_group" set "MAVEN_GROUP=!value!"
+    if "!key!"=="access_widener" set "ACCESS_WIDENER=!value!"
 )
 
 if "%MOD_ID%"=="" (
@@ -37,6 +39,12 @@ if "%MAVEN_GROUP%"=="" (
     exit /b 1
 )
 
+if "%ACCESS_WIDENER%"!="true" (
+    powershell -Command "(Get-Content build.gradle) | Where-Object {$_ -notmatch 'src/main/resources/pistonmodtemplate.accesswidener'} | Set-Content build.gradle"
+    powershell -Command "(Get-Content src/main/resources/fabric.mod.json) | Where-Object {$_ -notmatch 'pistonmodtemplate.accesswidener'} | Set-Content src/main/resources/fabric.mod.json"
+    if exist src\main\resources\pistonmodtemplate.accesswidener del src\main\resources\pistonmodtemplate.accesswidener
+)
+
 :: Rename directories
 for /d /r %%D in (*pistonmodtemplate*) do (
     set "newdir=%%D"
@@ -44,8 +52,15 @@ for /d /r %%D in (*pistonmodtemplate*) do (
     if not "%%D"=="!newdir!" ren "%%D" "!newdir!"
 )
 
-:: Rename files
+:: Rename files mod_id
 for /r %%F in (*pistonmodtemplate*) do (
+    set "newfile=%%F"
+    set "newfile=!newfile:pistonmodtemplate=%MOD_ID%!"
+    if not "%%F"=="!newfile!" ren "%%F" "!newfile!"
+)
+
+:: Rename files mod_name
+for /r %%F in (*PistonModTemplate*) do (
     set "newfile=%%F"
     set "newfile=!newfile:PistonModTemplate=%MOD_NAME%!"
     if not "%%F"=="!newfile!" ren "%%F" "!newfile!"
@@ -71,7 +86,7 @@ if not "%MAVEN_GROUP%"=="ca.fxco" (
         powershell -Command "(Get-Content '%%F') | Where-Object { $_ -notmatch 'ca\.fxco\.pistonlib' } | ForEach-Object { $_ -replace 'ca\.fxco', '%MAVEN_GROUP%' } | Set-Content '%%F'"
     )
     :: Replace maven_group in gradle.properties
-    powershell -Command "(Get-Content 'gradle.properties') -replace 'ca\.fxco', '%MAVEN_GROUP%' | Set-Content 'gradle.properties'"
+    powershell -Command "(Get-Content gradle.properties) -replace 'ca\.fxco', '%MAVEN_GROUP%' | Set-Content gradle.properties"
 )
 
 :: Remove setup files

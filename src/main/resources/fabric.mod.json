@@ -11,6 +11,7 @@
   "license": "MIT",
   "icon": "assets/pistonmodtemplate/icon.png",
   "environment": "*",
+  "accessWidener" : "pistonmodtemplate.accesswidener",
   "entrypoints": {
     "client": [
       "ca.fxco.pistonmodtemplate.client.PistonModTemplateClient"
