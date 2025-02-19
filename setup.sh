@@ -12,6 +12,7 @@ MOD_ID=""
 MOD_NAME=""
 MAVEN_GROUP=""
 ACCESS_WIDENER=""
+MIXIN=""
 while IFS='=' read -r key value; do
     key=$(echo "$key" | tr -d ' ')
     value=$(echo "$value" | tr -d ' ')
@@ -20,6 +21,7 @@ while IFS='=' read -r key value; do
         mod_name) MOD_NAME="$value" ;;
         maven_group) MAVEN_GROUP="$value" ;;
         access_widener) ACCESS_WIDENER="$value" ;;
+        mixin) MIXIN="$value" ;;
     esac
 done < "$CONFIG_FILE"
 
@@ -43,6 +45,14 @@ if [[ "$ACCESS_WIDENER" != "true" ]]; then
     sed -i '/"src\/main\/resources\/pistonmodtemplate\.accesswidener"/d' build.gradle
     sed -i '/"pistonmodtemplate\.accesswidener"/d' src/main/resources/fabric.mod.json
     rm -f src/main/resources/pistonmodtemplate.accesswidener
+fi
+
+# Handle mixin
+if [[ "$MIXIN" != "true" ]]; then
+    sed -i '/"pistonmodtemplate\.mixins\.json"/d' src/main/resources/fabric.mod.json
+    rm -f src/main/resources/pistonmodtemplate.mixins.json
+else
+    mkdir "src/main/java/ca/fxco/pistonmodtemplate/mixin"
 fi
 
 # Rename directories

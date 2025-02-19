@@ -12,6 +12,7 @@
   "icon": "assets/pistonmodtemplate/icon.png",
   "environment": "*",
   "accessWidener" : "pistonmodtemplate.accesswidener",
+  "mixins" : [ "pistonmodtemplate.mixins.json" ],
   "entrypoints": {
     "client": [
       "ca.fxco.pistonmodtemplate.client.PistonModTemplateClient"

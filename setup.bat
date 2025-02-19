@@ -13,6 +13,7 @@ set "MOD_ID="
 set "MOD_NAME="
 set "MAVEN_GROUP="
 set "ACCESS_WIDENER="
+set "MIXIN="
 for /f "tokens=1,2 delims==" %%A in (%CONFIG_FILE%) do (
     set "key=%%A"
     set "value=%%B"
@@ -22,6 +23,7 @@ for /f "tokens=1,2 delims==" %%A in (%CONFIG_FILE%) do (
     if "!key!"=="mod_name" set "MOD_NAME=!value!"
     if "!key!"=="maven_group" set "MAVEN_GROUP=!value!"
     if "!key!"=="access_widener" set "ACCESS_WIDENER=!value!"
+    if "!key!"=="mixin" set "MIXIN=!value!"
 )
 
 if "%MOD_ID%"=="" (
@@ -39,10 +41,20 @@ if "%MAVEN_GROUP%"=="" (
     exit /b 1
 )
 
+:: Handle accessWidener
 if "%ACCESS_WIDENER%"!="true" (
     powershell -Command "(Get-Content build.gradle) | Where-Object {$_ -notmatch 'src/main/resources/pistonmodtemplate.accesswidener'} | Set-Content build.gradle"
     powershell -Command "(Get-Content src/main/resources/fabric.mod.json) | Where-Object {$_ -notmatch 'pistonmodtemplate.accesswidener'} | Set-Content src/main/resources/fabric.mod.json"
     if exist src\main\resources\pistonmodtemplate.accesswidener del src\main\resources\pistonmodtemplate.accesswidener
+)
+
+:: Handle mixin
+if "%MIXIN%"!="true" (
+    powershell -Command "(Get-Content src/main/resources/fabric.mod.json) | Where-Object {$_ -notmatch 'pistonmodtemplate.mixins.json'} | Set-Content src/main/resources/fabric.mod.json"
+    if exist src\main\resources\pistonmodtemplate.mixins.json del src\main\resources\pistonmodtemplate.mixins.json
+)
+if "%MIXIN%"=="true" (
+    mkdir "src/main/java/ca/fxco/pistonmodtemplate/mixin"
 )
 
 :: Rename directories
