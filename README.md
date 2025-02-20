@@ -10,6 +10,10 @@ Setting up the template is pretty straightforward. Everything's been automated!
    - `mod_id` - Change `pistonmodtemplate` to your new mod id
    - `mod_name` - Change `PistonModTemplate` to your mod name/archive base name *(without spaces)*
    - `maven_group` - Change `ca.fxco` to your package
+   - `access_widener` - Set to `true` if you want to use access wideners
+   - `mixin` - Set to `true` if you want to use mixin
+   - `use_pistonlib_config` - Set to `true` if you want to use pistonlib's config system
+   - Make sure there's a new line at the end of the config
 2. Now run the setup file
    - On Windows, run `setup.bat`
    - On Mac/Linux, run `setup.sh`
