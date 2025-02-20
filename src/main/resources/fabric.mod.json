@@ -22,6 +22,9 @@
     ],
     "pistonlib": [
       "ca.fxco.pistonmodtemplate.PistonModTemplate"
+    ],
+    "pistonlib-configfield": [
+      "ca.fxco.pistonmodtemplate.PistonModTemplate"
     ]
   },
   "depends": {

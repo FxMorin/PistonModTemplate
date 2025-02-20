@@ -13,6 +13,7 @@ MOD_NAME=""
 MAVEN_GROUP=""
 ACCESS_WIDENER=""
 MIXIN=""
+USE_CONFIG=""
 while IFS='=' read -r key value; do
     key=$(echo "$key" | tr -d ' ')
     value=$(echo "$value" | tr -d ' ')
@@ -22,6 +23,7 @@ while IFS='=' read -r key value; do
         maven_group) MAVEN_GROUP="$value" ;;
         access_widener) ACCESS_WIDENER="$value" ;;
         mixin) MIXIN="$value" ;;
+        use_pistonlib_config) USE_CONFIG="$value" ;;
     esac
 done < "$CONFIG_FILE"
 
@@ -53,6 +55,19 @@ if [[ "$MIXIN" != "true" ]]; then
     rm -f src/main/resources/pistonmodtemplate.mixins.json
 else
     mkdir "src/main/java/ca/fxco/pistonmodtemplate/mixin"
+fi
+
+# Handle use_pistonlib_config
+if [[ "$USE_CONFIG" != "true" ]]; then
+    rm -f src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplateConfig.java
+    rm -f src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplatePistonLibConfig.java
+    # Remove pistonlib-configfield block in fabric.mod.json
+    awk '/pistonlib-configfield/ {getline; getline; next} {print}' 'src/main/resources/fabric.mod.json' > 'src/main/resources/fabric.mod.tmp' && mv 'src/main/resources/fabric.mod.tmp' 'src/main/resources/fabric.mod.json'
+else
+    rm -f src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
+    mv src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplatePistonLibConfig.java src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
+    sed -i "/PistonModTemplatePistonLibConfig/PistonModTemplate/g" src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
+    sed -i '/THIS CLASS IS ONLY USED DURING THE SETUP/d' src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
 fi
 
 # Rename directories

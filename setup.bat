@@ -14,6 +14,7 @@ set "MOD_NAME="
 set "MAVEN_GROUP="
 set "ACCESS_WIDENER="
 set "MIXIN="
+set "USE_CONFIG="
 for /f "tokens=1,2 delims==" %%A in (%CONFIG_FILE%) do (
     set "key=%%A"
     set "value=%%B"
@@ -24,6 +25,7 @@ for /f "tokens=1,2 delims==" %%A in (%CONFIG_FILE%) do (
     if "!key!"=="maven_group" set "MAVEN_GROUP=!value!"
     if "!key!"=="access_widener" set "ACCESS_WIDENER=!value!"
     if "!key!"=="mixin" set "MIXIN=!value!"
+    if "!key!"=="use_pistonlib_config" set "USE_CONFIG=!value!"
 )
 
 if "%MOD_ID%"=="" (
@@ -43,18 +45,33 @@ if "%MAVEN_GROUP%"=="" (
 
 :: Handle accessWidener
 if "%ACCESS_WIDENER%"!="true" (
-    powershell -Command "(Get-Content build.gradle) | Where-Object {$_ -notmatch 'src/main/resources/pistonmodtemplate.accesswidener'} | Set-Content build.gradle"
-    powershell -Command "(Get-Content src/main/resources/fabric.mod.json) | Where-Object {$_ -notmatch 'pistonmodtemplate.accesswidener'} | Set-Content src/main/resources/fabric.mod.json"
+    powershell -Command "(Get-Content 'build.gradle') | Where-Object {$_ -notmatch 'src/main/resources/pistonmodtemplate.accesswidener'} | Set-Content 'build.gradle'"
+    powershell -Command "(Get-Content 'src/main/resources/fabric.mod.json') | Where-Object {$_ -notmatch 'pistonmodtemplate.accesswidener'} | Set-Content 'src/main/resources/fabric.mod.json'"
     if exist src\main\resources\pistonmodtemplate.accesswidener del src\main\resources\pistonmodtemplate.accesswidener
 )
 
 :: Handle mixin
 if "%MIXIN%"!="true" (
-    powershell -Command "(Get-Content src/main/resources/fabric.mod.json) | Where-Object {$_ -notmatch 'pistonmodtemplate.mixins.json'} | Set-Content src/main/resources/fabric.mod.json"
+    powershell -Command "(Get-Content 'src/main/resources/fabric.mod.json') | Where-Object {$_ -notmatch 'pistonmodtemplate.mixins.json'} | Set-Content 'src/main/resources/fabric.mod.json'"
     if exist src\main\resources\pistonmodtemplate.mixins.json del src\main\resources\pistonmodtemplate.mixins.json
 )
 if "%MIXIN%"=="true" (
     mkdir "src/main/java/ca/fxco/pistonmodtemplate/mixin"
+)
+
+:: Handle use_pistonlib_config
+if "%USE_CONFIG%"!="true" (
+    if exist src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplateConfig.java del src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplateConfig.java
+    if exist src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplatePistonLibConfig.java del src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplatePistonLibConfig.java
+    :: Remove pistonlib-configfield block in fabric.mod.json
+    powershell -Command "$lines = Get-Content 'src/main/resources/fabric.mod.json'; $i = 0; $newLines = @(); while ($i -lt $lines.Length) { if ($lines[$i] -match 'pistonlib-configfield') { $i += 3 } else { $newLines += $lines[$i]; $i++ } }; $newLines | Set-Content 'src/main/resources/fabric.mod.json'"
+)
+if "%USE_CONFIG%"=="true" (
+    :: Replace PistonModTemplate with PistonModTemplatePistonLibConfig
+    if exist src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplate.java del src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplate.java
+    ren src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplatePistonLibConfig.java PistonModTemplate.java
+    powershell -Command "(Get-Content 'src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java') -replace 'PistonModTemplatePistonLibConfig', 'PistonModTemplate' | Set-Content 'src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java'"
+    powershell -Command "(Get-Content 'src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java') | Where-Object {$_ -notmatch 'THIS CLASS IS ONLY USED DURING THE SETUP'} | Set-Content 'src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java'"
 )
 
 :: Rename directories
