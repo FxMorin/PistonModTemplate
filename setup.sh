@@ -54,7 +54,9 @@ if [[ "$MIXIN" != "true" ]]; then
     sed -i '/"pistonmodtemplate\.mixins\.json"/d' src/main/resources/fabric.mod.json
     rm -f src/main/resources/pistonmodtemplate.mixins.json
 else
-    mkdir "src/main/java/ca/fxco/pistonmodtemplate/mixin"
+    if [ ! -d "src/main/java/ca/fxco/pistonmodtemplate/mixin" ]; then
+        mkdir "src/main/java/ca/fxco/pistonmodtemplate/mixin"
+    fi
 fi
 
 # Handle use_pistonlib_config
@@ -63,10 +65,12 @@ if [[ "$USE_CONFIG" != "true" ]]; then
     rm -f src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplatePistonLibConfig.java
     # Remove pistonlib-configfield block in fabric.mod.json
     awk '/pistonlib-configfield/ {getline; getline; next} {print}' 'src/main/resources/fabric.mod.json' > 'src/main/resources/fabric.mod.tmp' && mv 'src/main/resources/fabric.mod.tmp' 'src/main/resources/fabric.mod.json'
+    # Remove trailing comma
+    sed -i ':begin;$!N;s/,\n\s*}/\n  }/g;tbegin;P;D' src/main/resources/fabric.mod.json
 else
     rm -f src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
     mv src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplatePistonLibConfig.java src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
-    sed -i "/PistonModTemplatePistonLibConfig/PistonModTemplate/g" src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
+    sed -i "s/PistonModTemplatePistonLibConfig/PistonModTemplate/g" src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
     sed -i '/THIS CLASS IS ONLY USED DURING THE SETUP/d' src/main/java/ca/fxco/pistonmodtemplate/PistonModTemplate.java
 fi
 
@@ -109,7 +113,7 @@ if [[ "$MAVEN_GROUP" != "ca.fxco" ]]; then
     rm -rf "src/main/java/$OLD_PACKAGE_PATH"
     find src/main/java -type f -exec sed -i "/ca\.fxco\.pistonlib/!s/ca\.fxco/$MAVEN_GROUP/g" {} +
     # Replace maven_group in gradle.properties
-    sed -i "/ca\.fxco/$MAVEN_GROUP/g" gradle.properties
+    sed -i "s/ca\.fxco/$MAVEN_GROUP/g" gradle.properties
 fi
 
 # Remove setup files

@@ -65,6 +65,7 @@ if "%USE_CONFIG%"!="true" (
     if exist src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplatePistonLibConfig.java del src\main\java\ca\fxco\pistonmodtemplate\PistonModTemplatePistonLibConfig.java
     :: Remove pistonlib-configfield block in fabric.mod.json
     powershell -Command "$lines = Get-Content 'src/main/resources/fabric.mod.json'; $i = 0; $newLines = @(); while ($i -lt $lines.Length) { if ($lines[$i] -match 'pistonlib-configfield') { $i += 3 } else { $newLines += $lines[$i]; $i++ } }; $newLines | Set-Content 'src/main/resources/fabric.mod.json'"
+    :: TODO - Figure out how to remove the trailing comma
 )
 if "%USE_CONFIG%"=="true" (
     :: Replace PistonModTemplate with PistonModTemplatePistonLibConfig
